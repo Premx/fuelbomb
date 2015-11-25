@@ -73,12 +73,14 @@ public final class fuelbomb extends JavaPlugin
 
     public void onEnable() {
         plugin = this;
+        /*
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
         String s = fuelbomb.this.getConfig().getString("item_name");
 
