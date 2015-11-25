@@ -1,0 +1,20 @@
+#
+#
+# A Premx(TM) plugin
+# 1.8 ready 
+#
+
+#Auto update notification on or off
+updatenotification: on
+
+#Set a custom name for the fuelbomb. You can also use color codes like "&6, &c, &4 etc."
+item_name: '&6Fuelbomb'
+
+#Set a custom command to give someone or yourself a fuelbomb! (format -> /fuelbomb <command>)
+give_command_name: give
+
+#worldguard_support, set it to true if people have to only use fuelbomb if they can build in this region. 
+worldguard_support: false
+
+#Be up to date. true -> activate it false -> deaktivate it. Only People with the permission fuelbomb.news will se the news
+news: true

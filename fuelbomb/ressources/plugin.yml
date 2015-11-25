@@ -1,0 +1,22 @@
+name: FuelBomb
+version: 2.8
+main: it.premx.fuelbomb.fuelbomb
+author: Premx
+softdepend: [WorldGuard]
+permissions:
+  fuelbomb.use:
+    default: true
+    description: Ability to throw fuelbomb.
+  fuelbomb.reload:
+    default: op
+    description: Ability to reload config.
+  fuelbomb.update:
+    default: op
+    description: Ability to reload config.
+  fuelbomb.give:
+    default: op
+    description: Allow to use give command
+commands:
+   fuelbomb:
+      description: Commands...
+      usage: /<command>
