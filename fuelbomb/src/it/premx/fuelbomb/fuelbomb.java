@@ -131,6 +131,7 @@ public final class fuelbomb extends JavaPlugin
         Bukkit.addRecipe(fuelbomb);
     }
 
+    @Override
     public void onDisable() {
         //fuelbomb.this.saveConfig(); 
         plugin = null;
@@ -140,6 +141,7 @@ public final class fuelbomb extends JavaPlugin
     }
 
     @SuppressWarnings("deprecation")
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("fuelbomb")) {
 
