@@ -18,9 +18,9 @@
 package it.premx.fuelbomb;
 
 /**
- *
  * @author Premx
  */
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

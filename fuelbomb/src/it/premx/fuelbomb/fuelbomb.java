@@ -18,32 +18,24 @@
 package it.premx.fuelbomb;
 
 /**
- *
  * @author Premx
  */
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
 
-import org.bukkit.inventory.ItemStack;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -51,25 +43,26 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import java.util.Random;
+import java.util.logging.Logger;
 
 public final class fuelbomb extends JavaPlugin
         implements Listener {
 
-    protected Logger l0g;
-
     public static final String ITEM_IDENTIFIER = "fuelbomb";
-    public static String ITEM_NAME = ChatColor.GOLD + "Fuelbomb";
     public static final Material ITEM_MATERIAL = Material.GLASS_BOTTLE;
     private static final String Plugin = null;
-    public String commandname;
-    private Random random;
-    public String worldguardsupport;
+    public static String ITEM_NAME = ChatColor.GOLD + "Fuelbomb";
     public static WorldGuardPlugin wg;
     public static String broadcastString;
     public static boolean news = false;
     public static String prefix = ChatColor.AQUA + "[Fuelbomb] ";
     private static fuelbomb plugin;
+    public String commandname;
+    public String worldguardsupport;
+    protected Logger l0g;
+    private Random random;
 
     public void onEnable() {
         plugin = this;
@@ -182,6 +175,9 @@ public final class fuelbomb extends JavaPlugin
                 if (args[0].equalsIgnoreCase(commandname)) {
                     if (args.length == 1) {
                         if (sender.hasPermission("fuelbomb.give")) {
+                            if(!(sender instanceof Player)){
+                                return true;
+                            }
                             Player player = (Player) sender;
                             ItemStack is = new ItemStack(ITEM_MATERIAL);
                             ItemMeta im = is.getItemMeta();
@@ -196,14 +192,32 @@ public final class fuelbomb extends JavaPlugin
 
                         try {
 
+                            if (!sender.hasPermission("fuelbomb.give")) {
+                                return true;
+                            }
+
                             Player p = Bukkit.getServer().getPlayer(args[1]);
 
-                            ItemStack is = new ItemStack(ITEM_MATERIAL);
+                            if (args.length < 2){
+                                return true;
+                            }
+
+                            int amount = 1;
+                            if(args.length == 3){
+                                amount = Integer.valueOf(args[2]);
+                            }
+
+                            ItemStack is = new ItemStack(ITEM_MATERIAL,amount);
                             ItemMeta im = is.getItemMeta();
                             im.setDisplayName(ITEM_NAME);
                             is.setItemMeta(im);
                             p.getInventory().addItem(is);
-                            p.sendMessage(ChatColor.AQUA + "[Fuelbomb]" + ChatColor.GOLD + " You got a Fuelbomb.");
+
+                            if(amount == 1) {
+                                p.sendMessage(ChatColor.AQUA + "[Fuelbomb]" + ChatColor.GOLD + " You got a Fuelbomb.");
+                            }else {
+                                p.sendMessage(ChatColor.AQUA + "[Fuelbomb]" + ChatColor.GOLD + " You got " + ChatColor.YELLOW + amount + ChatColor.GOLD + " Fuelbombs.");
+                            }
                         } catch (Exception e) {
                             sender.sendMessage(ChatColor.AQUA + "[Fuelbomb]" + ChatColor.GOLD + " Player not found.");
                         }
