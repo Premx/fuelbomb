@@ -1,5 +1,5 @@
 name: FuelBomb
-version: 2.9
+version: 3.0
 main: it.premx.fuelbomb.fuelbomb
 author: Premx
 softdepend: [WorldGuard]
