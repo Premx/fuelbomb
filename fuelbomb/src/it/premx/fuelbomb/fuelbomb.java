@@ -23,6 +23,10 @@ package it.premx.fuelbomb;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Fire;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -38,6 +42,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,6 +50,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public final class fuelbomb extends JavaPlugin
@@ -63,6 +69,9 @@ public final class fuelbomb extends JavaPlugin
     public String worldguardsupport;
     protected Logger l0g;
     private Random random;
+
+    public static void main(String[] args) {
+    }
 
     public void onEnable() {
         plugin = this;
@@ -115,7 +124,9 @@ public final class fuelbomb extends JavaPlugin
         im.setDisplayName(ITEM_NAME);
         is.setItemMeta(im);
 
-        ShapedRecipe fuelbomb = new ShapedRecipe(is);
+        NamespacedKey namespacedKey = new NamespacedKey(this, ITEM_IDENTIFIER);
+
+        ShapedRecipe fuelbomb = new ShapedRecipe(namespacedKey, is);
         fuelbomb.shape(new String[]{"P", "G", "B"});
         fuelbomb.setIngredient('P', Material.PAPER);
         fuelbomb.setIngredient('G', Material.COAL);
@@ -133,7 +144,6 @@ public final class fuelbomb extends JavaPlugin
         //HandlerList.unregisterAll(this);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("fuelbomb")) {
@@ -154,12 +164,12 @@ public final class fuelbomb extends JavaPlugin
                             fuelbomb.this.reloadConfig();
                             String s = fuelbomb.this.getConfig().getString("item_name");
                             commandname = fuelbomb.this.getConfig().getString("give_command_name");
-                            if (commandname == "") {
+                            if (commandname.equals("")) {
                                 commandname = "give";
                             }
                             ITEM_NAME = ChatColor.translateAlternateColorCodes('&', s);
                             worldguardsupport = fuelbomb.this.getConfig().getString("worldguard_support");
-                            if (!(worldguardsupport == "true" || worldguardsupport == "false")) {
+                            if (!(worldguardsupport.equals("true") || worldguardsupport.equals("false"))) {
                                 worldguardsupport = "false";
                             }
                             sender.sendMessage(ChatColor.AQUA + "[Fuelbomb]" + ChatColor.GOLD + " Config reloaded!");
@@ -243,7 +253,7 @@ public final class fuelbomb extends JavaPlugin
         if (!p.hasPermission("fuelbomb.use")) {
             return;
         }
-        ItemStack item = p.getItemInHand();
+        ItemStack item = p.getInventory().getItemInMainHand();
 
         if (item == null) {
             return;
@@ -254,7 +264,7 @@ public final class fuelbomb extends JavaPlugin
         if ((!item.hasItemMeta()) || (!item.getItemMeta().hasDisplayName())) {
             return;
         }
-        if (!p.getItemInHand().getItemMeta().getDisplayName().equals(ITEM_NAME)) {
+        if (!p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ITEM_NAME)) {
             return;
         }
 
@@ -262,7 +272,7 @@ public final class fuelbomb extends JavaPlugin
 
         Location loc = p.getLocation();
 
-        if (worldguardsupport == "true") {
+        if (worldguardsupport.equals("true")) {
             if (!(worldguard_check.checkPerms(p, loc))) {
                 return;
             }
@@ -276,7 +286,7 @@ public final class fuelbomb extends JavaPlugin
 
         final Item i = w.dropItem(p.getEyeLocation(), is);
 
-        i.setMetadata("fuelbomb", new FixedMetadataValue(this, Integer.valueOf(0)));
+        i.setMetadata("fuelbomb", new FixedMetadataValue(this, 0));
 
         i.setVelocity(p.getEyeLocation().getDirection());
 
@@ -298,20 +308,16 @@ public final class fuelbomb extends JavaPlugin
             @Override
             public void run() {
 
-                Location groundloc = i.getLocation();
+                Location groundLoc = i.getLocation();
 
-                groundloc.setY(groundloc.getY() - 1);
+                groundLoc.setY(groundLoc.getY() - 1);
 
-                Material groundtex = groundloc.getBlock().getType();
+                Material groundtex = groundLoc.getBlock().getType();
 
-                Location directloc = i.getLocation();
                 Vector directvec = i.getLocation().getDirection();
                 directvec.multiply(2);
-                directloc = directvec.toLocation(i.getWorld());
 
-                Material directtex = directloc.getBlock().getType();
-
-                if (groundtex == Material.AIR || groundtex == Material.LONG_GRASS) {
+                if (groundtex == Material.AIR || groundtex == Material.TALL_GRASS) {
                     return;
                 }
 
@@ -363,13 +369,15 @@ public final class fuelbomb extends JavaPlugin
                 Location droploc = i.getLocation();
                 droploc.setY(i.getLocation().getY() + 1);
 
-                FallingBlock fb = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
-                FallingBlock fb1 = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
-                FallingBlock fb2 = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
+                BlockData blockData = Material.FIRE.createBlockData();
 
-                FallingBlock fb3 = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
-                FallingBlock fb4 = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
-                FallingBlock fb5 = i.getWorld().spawnFallingBlock(droploc, Material.FIRE, (byte) 0);
+                FallingBlock fb = i.getWorld().spawnFallingBlock(droploc, blockData);
+                FallingBlock fb1 = i.getWorld().spawnFallingBlock(droploc, blockData);
+                FallingBlock fb2 = i.getWorld().spawnFallingBlock(droploc, blockData);
+
+                FallingBlock fb3 = i.getWorld().spawnFallingBlock(droploc, blockData);
+                FallingBlock fb4 = i.getWorld().spawnFallingBlock(droploc, blockData);
+                FallingBlock fb5 = i.getWorld().spawnFallingBlock(droploc, blockData);
 
                 float x = (float) (Math.random() * 0.4D);
                 float y = (float) (Math.random() * 0.4D);
@@ -444,4 +452,5 @@ public final class fuelbomb extends JavaPlugin
             p.sendMessage(prefix + broadcastString);
         }
     }
+
 }

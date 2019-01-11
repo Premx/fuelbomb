@@ -3,6 +3,7 @@ version: 2.9
 main: it.premx.fuelbomb.fuelbomb
 author: Premx
 softdepend: [WorldGuard]
+api-version: 1.13
 permissions:
   fuelbomb.use:
     default: true
