@@ -1,11 +1,8 @@
 #
 #
 # A Premx(TM) plugin
-# 1.8 ready 
 #
-
-#Auto update notification on or off
-updatenotification: on
+#
 
 #Set a custom name for the fuelbomb. You can also use color codes like "&6, &c, &4 etc."
 item_name: '&6Fuelbomb'

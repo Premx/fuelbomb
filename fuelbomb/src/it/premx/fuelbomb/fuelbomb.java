@@ -442,15 +442,4 @@ public final class fuelbomb extends JavaPlugin
         }
     }
 
-    @EventHandler
-    public void Playjoin(PlayerJoinEvent e) {
-
-        Player p = e.getPlayer();
-
-        if (p.hasPermission("fuelbomb.news") && news == true) {
-
-            p.sendMessage(prefix + broadcastString);
-        }
-    }
-
 }
